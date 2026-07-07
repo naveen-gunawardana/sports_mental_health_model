@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\code\train_relevance.py", line 4, in <module>
+    from cli import get_args, MODELS_DIR, DATA_DIR
+  File "C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\code\cli.py", line 12, in <module>
+    from utils import (
+  File "C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\code\utils.py", line 14, in <module>
+    import zstandard
+ModuleNotFoundError: No module named 'zstandard'

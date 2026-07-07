@@ -1,0 +1,26 @@
+Performing computations on cpu
+Number of annotated docs used in training: 1000
+Number of instances for each label: Counter({1: 620, 0: 380})
+Loading predetermined original training, validation and test sets (80/10/10 split)
+Number of training documents: 800
+Number of instances for each label in training data: Counter({1: 493, 0: 307})
+Number of validation documents: 100
+Number of instances for each label in validation data: Counter({1: 62, 0: 38})
+Number of test documents: 100
+Number of instances for each label in test data: Counter({1: 65, 0: 35})
+Class weights to account for imbalanced training data: [np.float64(1.3029315960912051), np.float64(0.8113590263691683)]
+
+Training a new classifier for relevance of posts to the mental_health social group...
+{'loss': '0.7307', 'grad_norm': '7.224', 'learning_rate': '4.75e-05', 'epoch': '0.2'}
+{'eval_loss': '0.6929', 'eval_runtime': '98.93', 'eval_samples_per_second': '1.011', 'eval_steps_per_second': '0.131', 'epoch': '0.2'}
+{'loss': '0.7204', 'grad_norm': '6.908', 'learning_rate': '3.812e-05', 'epoch': '0.4'}
+{'eval_loss': '0.6951', 'eval_runtime': '94.91', 'eval_samples_per_second': '1.054', 'eval_steps_per_second': '0.137', 'epoch': '0.4'}
+{'loss': '0.7214', 'grad_norm': '3.528', 'learning_rate': '2.562e-05', 'epoch': '0.6'}
+{'eval_loss': '0.694', 'eval_runtime': '95.8', 'eval_samples_per_second': '1.044', 'eval_steps_per_second': '0.136', 'epoch': '0.6'}
+{'loss': '0.696', 'grad_norm': '2.812', 'learning_rate': '1.313e-05', 'epoch': '0.8'}
+{'eval_loss': '0.7', 'eval_runtime': '98.84', 'eval_samples_per_second': '1.012', 'eval_steps_per_second': '0.132', 'epoch': '0.8'}
+{'loss': '0.6864', 'grad_norm': '2.955', 'learning_rate': '6.25e-07', 'epoch': '1'}
+{'eval_loss': '0.6959', 'eval_runtime': '96.55', 'eval_samples_per_second': '1.036', 'eval_steps_per_second': '0.135', 'epoch': '1'}
+{'train_runtime': '4546', 'train_samples_per_second': '0.176', 'train_steps_per_second': '0.022', 'train_loss': '0.711', 'epoch': '1'}
+
+Evaluating on original test set...

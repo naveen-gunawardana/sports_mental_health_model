@@ -1,0 +1,24 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\.venv\Lib\site-packages\huggingface_hub\file_download.py:137: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\navee_xqu8e3o\.cache\huggingface\hub\models--roberta-large. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+[transformers] `logging_dir` is deprecated and will be removed in v5.2. Please set `TENSORBOARD_LOGGING_DIR` instead.
+Traceback (most recent call last):
+  File "C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\code\train_relevance.py", line 537, in <module>
+    training_args = make_training_args(
+                    ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\code\train_relevance.py", line 314, in make_training_args
+    return TrainingArguments(
+           ^^^^^^^^^^^^^^^^^^
+  File "<string>", line 115, in __init__
+  File "C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\.venv\Lib\site-packages\transformers\training_args.py", line 1599, in __post_init__
+    self.device
+  File "C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\.venv\Lib\site-packages\transformers\training_args.py", line 1890, in device
+    return self._setup_devices
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\navee_xqu8e3o\AppData\Local\Programs\Python\Python311\Lib\functools.py", line 1001, in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\.venv\Lib\site-packages\transformers\training_args.py", line 1778, in _setup_devices
+    raise ImportError(
+ImportError: Using the `Trainer` with `PyTorch` requires `accelerate>=1.1.0`: Please run `pip install transformers[torch]` or `pip install 'accelerate>=1.1.0'`

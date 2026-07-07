@@ -1,0 +1,11 @@
+Performing computations on cpu
+Number of annotated docs used in training: 1000
+Number of instances for each label: Counter({1: 620, 0: 380})
+Creating original training, validation and test sets (80/10/10 split)
+Number of training documents: 800
+Number of instances for each label in training data: Counter({1: 493, 0: 307})
+Number of validation documents: 100
+Number of instances for each label in validation data: Counter({1: 62, 0: 38})
+Number of test documents: 100
+Number of instances for each label in test data: Counter({1: 65, 0: 35})
+Class weights to account for imbalanced training data: [np.float64(1.3029315960912051), np.float64(0.8113590263691683)]

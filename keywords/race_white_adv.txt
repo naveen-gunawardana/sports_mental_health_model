@@ -1,0 +1,82 @@
+roundeye
+redlegs
+pink pig
+peckerwood
+palagi
+(?i)\b(?<!walter[-\s])(?<!dana[-\s])(?<!angela[-\s])(?<!betty[-\s])(?<!barry[-\s])(?<!roddy[-\s])(?<!jack[-\s])(?<!shaun[-\s])(?<!vanna[-\s])(?<!reggie[-\s])(?<!snow[-\s])(?<!persia[-\s])(?<!jaleel[-\s])(?<!black[-\s]and[-\s])white(?!\s+(?:side|space|label|list|discos|little|day|edge|shark|tank|text|ceramic|case|walker|belt|album|witch|sprinkle|cat|dog|car|sox|house|flecks|heads|ones|colou?r|cloth|dragon|gold|smudge|stain|spot|lying|lie|teeth|knight|meat|mercedes|rose|sweater|vest|strands?|sclera|cars?|trucks?|vans?|suvs?|sedan|jeep|motorcycle|scooter|vehicle|benz|bmw|toyota|honda|ford|tesla|audi|jaguar|porsche|mustang|limo|bike|shirts?|tshirt|tees?|dress|dresses|shoes?|sneakers?|boots?|pants|trousers|jeans|jackets?|coats?|hoodies?|sweatshirt|cardigan|hats?|caps?|beanie|gloves|scarf|scarves|socks?|suits?|gowns?|skirts?|blouse|shorts|leggings|robes?|uniform|jerseys?|bikini|swimsuit|sandals|heels|sweatpants|tux|tuxedo|apron|collar|eyes?|hair|beards?|mustache|moustache|brows?|eyebrows?|eyelashe?s?|lashe?s?|nails?|tooth|tongue|gums|knuckles?|fur|feathers?|mane|wigs?|tigers?|horses?|swans?|wolf|wolves|rabbits?|whales?|snakes?|owl|doves?|crows?|elephant|stallion|birds?|lions?|flags?|wine|noise|blood|board|chocolate|christmas|smoke|powder|paint|walls?|fence|sand|sauce|bread|wedding|picket|claw|lightning)\b)\b
+(?i)\bwhite[-\s]?(?:face|ness|wash)\b
+whitey
+whitely
+whiter
+(?i)\bKaren\b(?!\s+[A-Z][a-z]+)
+\bMiss Ann\b
+whitest
+(?i)\b(?:light|fair)[-\s]*skin(?:ned)?\b
+(?i)\bpale(?:r|st)?\b
+(?i)\bpale[-\s]?ness\b
+ofay
+mzungu
+Londos?\b
+kojaengi
+haole
+honky
+honkey
+honkie
+gweilo
+gwailo
+kwai lo
+gwers?\b
+gubs?\b
+gin jockey
+frang khi nok
+Caucasian
+cracker
+(?i)\b(?<!of[-\s])(?<!to[-\s])(?<!lime[-\s])(?<!lime)light(?!\s+(?:side|year|coral|fade|bulb|rail|weight|house|switch|beer|reading|novel|touch|mode|theme))\b
+Aryan
+\bgora
+Buckra
+bakra
+bule
+carcamano
+twinkie
+wasi'chu
+wasichu
+wasi chu
+goro
+paler
+palest
+paleness
+pale-ness
+radiant(?!\s+(?:look))\b
+glowing
+sun[-\s/]*kissed
+golden
+warm-toned
+warm toned
+rich
+deep
+even[-\s/]*toned
+luminous
+porcelain
+(?i)\bashy(?:-?ness)?\b
+ashen(?!\s+(?:warrior))\b
+\bsallow
+ruddy
+washed[-\s/]out
+ghostly
+ghost[-\s/]*skinned
+chalky
+chalk[-\s/]*skin
+pasty
+(?i)\bpast[iy]ness\b
+too[-\s/]*light
+ghosts?\b
+milky
+(?i)\b(?<!chlorine[-\s])bleach(?!ers?)\b
+(?i)\b(?<!research[-\s])paper\b(?!\s*(?:cut|clip|trail|tiger))
+mayo
+snow\b
+(?i)\bsee[-\s/]*through\b
+albino
+\begg\b(?=\s+(?:skin|complexion))
+ghastly(?!\s+(?:state))\b

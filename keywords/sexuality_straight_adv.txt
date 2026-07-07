@@ -1,0 +1,10 @@
+non[-\s]*gay
+non[-\s]*homosexual
+\bstraight\b(?!\s*(?:line|edge|away|up|out|through|flush|shooter|talk|jacket|razor|street|sets?|sets? of|pipe|bourbon|ahead))
+\bbreeder\b(?!\s*(?:dog|cat|horse|cattle|poultry|fish|plant|seed|coral|rabbit|pig|program|reactor))
+\bStr8
+\bHet\b
+cis[-\s]*het
+\bheteros?\b
+\bhetero[-\s]*sexual
+heterosexis

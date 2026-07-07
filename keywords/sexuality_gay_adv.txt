@@ -1,0 +1,74 @@
+(?i)\bgay(?!\s*(?:et|wing|a|i|lord|le|leen|lene|lin|lyn|lon|nor|nora|norah|atri|atrii|atriya))
+\bhomos\b
+\bHomo\b
+\bhomophob
+\bhomoerotic
+homosexual
+Same[-\s]*gender loving
+Same[-\s]*sex
+\bSGLs?\b
+Arse bandit
+Ass bandit
+Batty boy
+(?i)\bfruits?\b(?!\s*(?:salad|juice|basket|tree|market|fly|cake))
+Butt Fruit
+Fag
+Faggot
+Achillean
+Anal assassin
+Anal astronaut
+Bender
+(?i)(?<!hell[-\s])\bbent\b
+\bBoi\b
+\bbois\b
+Booty buffer
+Bufter
+Bufty
+Bum boy
+Bum chum
+Bum robber
+Butt pirate
+Butt boy
+Butt rider
+Butt pilot
+Butt rustler
+Cocksucker
+(?i)\bfairy\b(?![-\s]*land)
+(?i)\bflamer\b
+(?i)\bflit\b(?!\s*(?:between|about))
+Flower
+\bfriend[-\s]of[-\s]dorothy\b
+Fruit[-\s]loop
+Fruit[-\s]packer
+Fudge[-\s]packer
+Light[-\s]in[-\s]the[-\s]loafers
+Light[-\s]in[-\s]the[-\s]pants
+Light[-\s]in[-\s]the[-\s]fedora
+Man[-\s]loving[-\s]man
+\bMLMs?\b
+\bMSMs?\b
+Nancy[-\s]boy
+Pansy 
+Poof
+poofta
+poofter
+(?i)\bqueen\b(?!\s*(?:elizabeth|size|bed|bee|city|stown|of))
+\bSod\b
+\bsods\b
+sodom
+Swish
+Carpet muncher
+Rug muncher
+Kitty puncher
+Pussy puncher
+Bluff
+Cisbian
+Dyke
+Dykon
+Lesbian
+Muff[-\s]*diver
+Pillow princess
+Sapphic
+\bWLWs?\b
+Woman loving woman
+\bWSWs?\b

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "isaac-data"
+version = "0.1.1"
+description = "Python loader for the ISAAC Reddit corpus (Illinois Social Attitudes Aggregate Corpus) direct-download endpoint."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "ISAAC / Social Cognition Lab, University of Illinois Urbana-Champaign" }]
+keywords = ["ISAAC", "reddit", "corpus", "dataset", "nlp", "social-attitudes"]
+dependencies = [
+    "requests>=2.25",
+    "pandas>=1.3",
+    "pyarrow>=10",
+    "fsspec>=2023.1.0",
+    "aiohttp>=3.8",
+    "platformdirs>=3",
+]
+
+[project.optional-dependencies]
+polars = ["polars>=0.20"]
+docs = ["pdoc>=14"]
+dev = ["pytest>=7", "pdoc>=14"]
+
+[project.scripts]
+isaac-data = "isaac_data.cli:main"
+
+[project.urls]
+Homepage = "https://isaac.psychology.illinois.edu/direct-download/"
+Source = "https://github.com/BabakHemmatian/Illinois_Social_Attitudes"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["isaac_data*"]

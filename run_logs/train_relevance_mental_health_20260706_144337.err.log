@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "C:\Users\navee_xqu8e3o\OneDrive\Documents\programming\AM\code\train_relevance.py", line 20, in <module>
+    from sklearn.utils import compute_class_weight
+ModuleNotFoundError: No module named 'sklearn'

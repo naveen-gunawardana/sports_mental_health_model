@@ -1,0 +1,6 @@
+﻿Abled
+\bnon[-\s]?disabled\b
+\bnormal(?!\s+(?:amount|circumstances|way|draft|version|monster|horde|enemy)|ly|cy|i[sz]e)
+Unimpaired
+\bable[-\s]?bodied\b
+\bcapable(?!\s+of)\b

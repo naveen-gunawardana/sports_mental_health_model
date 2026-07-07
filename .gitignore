@@ -1,0 +1,46 @@
+# raw Reddit files #
+############
+*.zst
+
+# processed Reddit files #
+############
+*.csv
+*.jsonl
+*.sqlite
+
+# Atomic-write temp files from the pipeline (e.g. .RC_2014-12.csv.b8cWe1).
+# These escape the *.csv / *.jsonl rules because the real extension is the
+# random suffix; they are renamed to their final name on completion.
+.*.csv.*
+.*.jsonl.*
+.*.sqlite.*
+
+# Whitelist the relevance training samples and the post-filter QA samples so
+# reviewers can audit the FPR / kappa / classifier-performance claims.
+!data/data_relevance_ratings/**/*.csv
+!data/data_relevance_QAratings/**/*.csv
+
+# Local-only de-identification artifacts for the QA samples — NEVER commit.
+# Keys map the blinded random_id back to author/id/metadata; backups are the
+# pre-anonymization originals. Both still contain the stripped PII.
+data/data_relevance_QAratings_keys/
+data/data_relevance_QAratings_ORIGINAL_BACKUP/
+
+# De-anonymization key files that live alongside the whitelisted rating
+# samples (map blinded random_id -> author/orig_id). NEVER commit.
+*_key.csv
+
+# virtualenv #
+.venv/
+
+# results/ (20G of local run artifacts) #
+results/
+
+# trained models #
+models/
+
+# pycache #
+code/__pycache__
+
+# Slurm job stdout/stderr per-task logs #
+slurm_logs/
