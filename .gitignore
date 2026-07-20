@@ -30,6 +30,9 @@ data/data_relevance_QAratings_ORIGINAL_BACKUP/
 # samples (map blinded random_id -> author/orig_id). NEVER commit.
 *_key.csv
 
+# editor workspace files #
+*.code-workspace
+
 # virtualenv #
 .venv/
 

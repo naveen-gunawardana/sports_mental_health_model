@@ -54,7 +54,7 @@ retrain_trial = 8 # identifies the retraining run
 max_length = 512           # max tokens per document
 train_batch_size = 8       # batch size for original training
 retrain_batch_size = 8     # batch size for retraining
-epochs = 1                 # original training epochs
+epochs = 3                 # original training epochs
 custom_training = False    # use penalty for specific mistakes if True (see the next line)
 penalize_confusion = "0_to_1" # which direction in mistakes is more important to fix: [true label]_to_[wrong_classification]
 penalty_weight = 0.5       # only matters if custom_training is True
@@ -104,10 +104,10 @@ def collect_run_params():
 ### Path Handling
 
 # NOTE: Model loading assumes the default pathing.
-if group == "skin_tone":
+if group in ("skin_tone", "mental_health", "mh", "sport"):
     model_name = "roberta-base"
 else:
-    model_name = "roberta-large" 
+    model_name = "roberta-large"
 
 if use_trial_suffix_in_path:
     model_path = os.path.join(
@@ -316,6 +316,7 @@ def make_training_args(
         num_train_epochs=epochs,
         per_device_train_batch_size=train_batch_size,
         per_device_eval_batch_size=8,
+        learning_rate=2e-5,
         warmup_steps=warmup_steps,
         weight_decay=0.01,
         logging_dir="./logs",
@@ -538,7 +539,7 @@ training_args = make_training_args(
     epochs=epochs,
     train_batch_size=train_batch_size,
     logging_steps=20,
-    warmup_steps=20,
+    warmup_steps=60,
     description="original training",
 )
 

@@ -41,6 +41,8 @@ groups = {
     "race": ["black", "white"],
     "skin_tone": ["dark", "light"],
     "mental_health": ["mental_health", "not_mental_health"],
+    "mh": ["mh", "not_mh"],
+    "sport": ["sport", "not_sport"],
 }
 
 # Information stored for each comment in ISAAC output files
@@ -338,9 +340,10 @@ def f1_calculator(labels,predictions):
                 else:
                     raise Exception
 
-    precision = float(metrics['tp']) / float(metrics['tp'] + metrics['fp'])
-    recall = float(metrics['tp']) / float(metrics['tp'] + metrics['fn'])
-    F_1 = 2 * float(precision * recall) / float(precision + recall)
+    tp, fp, fn = metrics['tp'], metrics['fp'], metrics['fn']
+    precision = float(tp) / float(tp + fp) if (tp + fp) > 0 else 0.0
+    recall = float(tp) / float(tp + fn) if (tp + fn) > 0 else 0.0
+    F_1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
 
     return precision, recall, F_1
 
