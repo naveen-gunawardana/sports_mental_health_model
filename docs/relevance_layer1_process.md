@@ -228,6 +228,46 @@ on sports Reddit — worth a future control-augmentation pass); and the AND-gate
 mh signal isn't *about* the sport ("work stress is killing me, nice shot") or is third-party ("my
 coach is mentally abusive") — these need a gate redesign decision, not a retrain.
 
+## 6e. Applying the gate to the full corpus — and fixing over-flagging with active learning
+
+We ran the gate over the full 2018–2023 corpus (1.63 M comments; matched arm 669k + baseline
+956k, skipping a duplicate baseline-2023 folder) to build the study dataset by **pruning** to the
+comments it marks relevant. Two problems surfaced on inspection and were fixed:
+
+1. **Sport model fired on sport *vocabulary*, not *topic*.** Because the corpus is keyword-matched,
+   nearly every comment contains sport words, so the sport model rubber-stamped (e.g. a r/depression
+   comment saying "I don't watch basketball" scored P(sport)=1.0). Fixed with **hard negatives**
+   (sport words present but not about sport) → held-out sport F1 0.94, 89% specificity. Also dropped
+   dedicated mental-health subreddits (r/depression, r/Anxiety, …) — being in one doesn't make a
+   comment about sport.
+
+2. **mh model over-flagged (~45% of "relevant" had no real MH).** Synthetic hard negatives barely
+   helped (42%→39%). What worked was **active learning**: harvest the comments the model itself marks
+   relevant from fresh corpus samples, **strict-label** them with a labeling workflow, and add the
+   real false-positives (mh=0) back to training. Five rounds harvested ~2,900 real, distribution-
+   matched examples. Held-out relevant rate fell **35% → 17%**; false-positives as a share of the
+   corpus fell **~15% → ~6%** (≈60% fewer). Hand-audit clear-FP: 45% → ~33% (a floor — the residual
+   is injury/logistics/meta text co-occurring with emotional vocabulary, plus performance-psychology
+   cases that are in-scope by design).
+
+**Lesson:** synthetic negatives you invent don't match the deployment error distribution; harvesting
+the model's *actual* mistakes and relabeling them (active learning) is dramatically more effective.
+
+### Final dataset (all months, 2018–2023)
+
+| arm | processed | relevant | % |
+|---|---|---|---|
+| matched 2018–2022 | 574,639 | 77,018 | 13.4% |
+| matched 2023 | 94,471 | 10,200 | 10.8% |
+| **matched total (dataset)** | **669,110** | **87,218** | **13.0%** |
+| baseline (control) | 956,267 | 1,315 | **0.1%** |
+
+**Matched 13.0% vs baseline 0.1% = ~130× separation** (was 16× with the broken gate) — a strong
+validation that the gate isolates athlete mental health from the keyword-matched control.
+Pipeline: `code/classify_corpus.py` + `code/driver_classify.py` (fp16, length-sorted batching,
+mh→sport cascade); active-learning harvest/label scripts + `code/make_aug_*.py`. Output:
+`data/classified/final_dataset.csv` (gitignored; regenerate from the pipeline).
+
 ## 6. Bottom line for the paper
 
 The entire ~0.68 → 0.92 jump came from **one change: matching the pretraining domain** (formal

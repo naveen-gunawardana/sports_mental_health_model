@@ -50,3 +50,7 @@ slurm_logs/
 
 # local label backups (narrow state preserved in git history already)
 data/data_relevance_ratings/comments/_backup_*/
+
+# raw corpus dump (uploaded locally, ~1GB) and classifier outputs
+/comments/
+data/classified/
