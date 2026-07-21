@@ -202,6 +202,32 @@ at ≤ 0.11 (the augmentation controls prevented over-flagging). Recall rose 0.8
 catches the broad positives); a small precision cost (0.91 → 0.87) is the expected price of the
 wider net. **This is the current deliverable** (`filter_relevance_mh_broad_aug_backup`).
 
+## 6d. Adversarial edge cases & negation hardening
+
+Stress-testing the demo surfaced systematic false-positive modes on sports text: **"mental" as
+slang/jargon** ("that game was mental", "mental toughness"), **negation blindness** ("I don't get
+anxious" scored 1.00 — the model saw "anxious", ignored "don't"), **metaphor** ("this sport is my
+therapy"), and **topic-only mentions** ("a documentary about depression"). It was also robust on
+several ("this offense is depressing to watch" → 0.00; "dead tired, legs destroyed" → physical, not
+mh). Full list in the trials discussion.
+
+We hardened **negation** (the highest-value, cleanest one) with `code/make_aug_negation.py`: negated-
+absence controls (mh=0) + negation-that-is-distress (mh=1). First attempt **regressed** bare
+"confidence issues" (0.99 → 0.26) because a control contained that exact phrase in the mh=0 class —
+a good reminder that every false-positive you teach away can drag a borderline true-positive down.
+v2 removed the poison and added bare-confidence positives to recover it.
+
+**Result:** negation FPs fixed ("I don't get anxious/stressed/burnt out" → 0.00) while perf-psych
+held ("confidence issues shooting" → 1.00, "choke under pressure" → 1.00); held-out gate 0.89 →
+**0.90** (P 0.86, R 0.93). **Residual known limitation:** "no anxiety here, I feel calm" still ~0.78
+(negated-anxiety + positive-words is a stubborn construction). Not chased further — diminishing
+returns vs. over-hardening risk.
+
+**Not fixed, logged for Babak (structural, not quick fixes):** "mental" slang/jargon FPs (frequent
+on sports Reddit — worth a future control-augmentation pass); and the AND-gate limitations where the
+mh signal isn't *about* the sport ("work stress is killing me, nice shot") or is third-party ("my
+coach is mentally abusive") — these need a gate redesign decision, not a retrain.
+
 ## 6. Bottom line for the paper
 
 The entire ~0.68 → 0.92 jump came from **one change: matching the pretraining domain** (formal
