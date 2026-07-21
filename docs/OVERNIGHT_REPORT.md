@@ -1,8 +1,11 @@
 # Layer-1 Relevance Classifier — Progress Report
 
-**Date:** 2026-07-20 · **Status:** ✅ **DONE — gate F1 0.92, exceeds the 0.8 target on all metrics.**
+**Date:** 2026-07-20 · **Status:** ✅ **DONE.** Narrow gate F1 0.92; **current deliverable is the
+broadened-scope gate at F1 0.89** (mh now includes sports/performance psychology). Both clear the
+0.8 target on all metrics.
 
-> Full diagnostic narrative (how we found and broke the ceiling): `docs/relevance_layer1_process.md`.
+> Full diagnostic narrative (ceiling → breakthrough → scope broadening): `docs/relevance_layer1_process.md`.
+> Broadened `mh` rubric: `docs/mh_rubric_broad.md`.
 
 ---
 

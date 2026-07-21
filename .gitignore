@@ -47,3 +47,6 @@ code/__pycache__
 
 # Slurm job stdout/stderr per-task logs #
 slurm_logs/
+
+# local label backups (narrow state preserved in git history already)
+data/data_relevance_ratings/comments/_backup_*/

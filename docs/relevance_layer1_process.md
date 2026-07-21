@@ -130,6 +130,33 @@ P(max) = 1.00 (fully confident), and the gate is **flat at 0.91–0.92 across th
 grid** — the operating point is robust, not a fragile knife-edge. Operating point: mh ≥ 0.45,
 sport ≥ 0.40. **Layer 1 is done.**
 
+## 6b. Scope change — broadening `mh` to include performance psychology
+
+After the 0.92 gate was built, a demo surfaced a scope question: comments like *"I don't play well
+when my parents are at the game"* or *"I have confidence issues shooting"* were classified **not**
+mental health. The old rubric treated sports/performance psychology as skill talk, not mental
+health. **Research decision:** for an athlete population, performance struggles (confidence, nerves,
+choking, pressure/expectations) are how many athletes first experience mental-health difficulty and
+can signal a larger issue — so they should count. `mh` was widened (see `docs/mh_rubric_broad.md`).
+
+**Process:** relabeled all 2,808 comments (train + held-out) with the broadened rubric via a
+47-agent labeling workflow, then combined by **union** (mh = old-positive OR new-positive) — a
+strict *broadening* that adds the new performance-psych positives but never drops an existing mh
+label (QA showed the from-scratch relabel added noise in both directions; union protects against
+losing real cases like "insomnia"/"anxious"). Train mh-positive 1,619 → 1,807. Retrained the
+twitter-roberta mh model; held-out is now 47% relevant.
+
+**Result:** gate **F1 0.89** (precision 0.91, recall 0.87) — still clears 0.8 on all metrics, down
+slightly from the narrow 0.92 because the broadened task is genuinely harder.
+
+**Honest limitation (accepted):** the model catches performance anxiety when there is a real
+emotional/distress signal (*"pressure from my parents… so anxious I freeze"* → fires), but **bare**
+confidence statements with no distress word (*"I have confidence issues shooting"*) still read as
+neutral. Two causes: such terse phrases are out-of-distribution vs. the longer real comments the
+model trained on (recall on actual corpus data is 0.87), and "confidence" is genuinely ambiguous
+(it appears in positive talk too). Making bare-confidence fire would need targeted augmentation at
+the risk of over-flagging; we chose to accept the current behavior.
+
 ## 6. Bottom line for the paper
 
 The entire ~0.68 → 0.92 jump came from **one change: matching the pretraining domain** (formal

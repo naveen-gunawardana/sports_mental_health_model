@@ -1,1 +1,1 @@
-prec=0.91 rec=0.92 f1=0.92 thr=mh0.45/sp0.40 pmhmax=1.00
+prec=0.91 rec=0.87 f1=0.89 thr=mh0.45/sp0.40 pmhmax=1.00
