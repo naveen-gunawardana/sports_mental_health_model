@@ -1,10 +1,10 @@
 # Layer-1 Relevance Classifier — Progress Report
 
-**Date:** 2026-07-20 · **Status:** ✅ **DONE.** Narrow gate F1 0.92; **current deliverable is the
-broadened + augmented + negation-hardened gate at F1 0.90** (P 0.86 / R 0.93; mh now includes
-sports/performance psychology and correctly fires on it, and negation false-positives are fixed).
-Both clear the 0.8 target on all metrics. *(An earlier "broadened" run was invalidated by a
-split-cache bug — see process doc §6c–6d; now fixed.)*
+**Date:** 2026-07-21 · **Status:** ✅ **DONE.** Current deliverable is the **balanced gate**:
+held-out **precision 0.90 / recall 0.80 / F1 0.85 / accuracy 0.87** (all ≥ 0.8), fixed sport model +
+1 active-learning round on mh. Applied to the full 2018–2023 corpus → `final_dataset.csv`
+(matched ~18% relevant vs baseline ~0.1%). See process doc §6a–6f for the full arc (domain-match
+breakthrough → broadening → sport fix → active-learning over-flag fix → rebalancing).
 
 > Full diagnostic narrative (ceiling → breakthrough → scope broadening): `docs/relevance_layer1_process.md`.
 > Broadened `mh` rubric: `docs/mh_rubric_broad.md`.

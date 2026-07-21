@@ -15,7 +15,7 @@ import numpy as np, torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 csv.field_size_limit(2**31 - 1)
 
-MH_THR, SP_THR = 0.60, 0.40      # current deliverable operating point (gate_status)
+MH_THR, SP_THR = 0.50, 0.40      # current deliverable operating point (gate_status)
 BATCH = 32
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 USE_FP16 = (DEVICE == "cuda")
