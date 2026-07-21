@@ -157,6 +157,51 @@ model trained on (recall on actual corpus data is 0.87), and "confidence" is gen
 (it appears in positive talk too). Making bare-confidence fire would need targeted augmentation at
 the risk of over-flagging; we chose to accept the current behavior.
 
+## 6c. Making performance-psychology actually fire — and a silent caching bug
+
+Testing the demo showed the broadened model *still* scored the anchor case
+*"I don't play well when my parents are at the game because I tense up"* at P(mh) = 0.01. The
+relabel-only approach had not taught the pattern (the flips were mostly general mh like "depressed";
+few were bare performance-tension), and **"confidence"/"tense up" are ambiguous** (they also appear
+in positive talk), so the model treated them as neutral skill talk.
+
+**Targeted augmentation** (`code/make_aug.py`): added 40 short performance-**struggle** examples as
+mh=1 (tensing up when watched, choking, lost confidence, nerves hurting play) **and** 20
+neutral/positive-performance controls as mh=0 (*"gained confidence, everything's clicking"*), so the
+model learns *struggle vs. not*, not just the keyword.
+
+### ⚠️ The caching bug (critical gotcha for future work)
+
+The first augmented retrain changed **nothing** — the anchor still read 0.01, and held-out metrics
+were byte-identical. Cause: `prepare_splits()` writes the train/val/test split (text **and** labels)
+to `models/train_relevance_data_split/` and, on later runs, **loads that cache if the files exist —
+ignoring the ratings CSVs entirely.** The cache was frozen at 15:03, so *every* retrain after that
+(the twitter breakthrough, the relabeling, the augmentation) trained on the **original narrow
+labels**. The "0.89 broadened" gate committed in `bc95fce` was really the *narrow* model scored
+against broadened held-out labels (which is also why its recall dropped to 0.87).
+
+**Fix (now in `train_relevance.py`):** `prepare_splits()` compares the cached (text→label) mapping
+against the current data and **rebuilds when they differ** (relabeled or augmented). Manual escape
+hatch: delete `models/train_relevance_data_split/` to force a fresh split.
+
+**Lesson for the paper / future you:** any cached artifact keyed only on *existence* is a silent
+staleness trap. After changing labels or adding data, confirm the split actually rebuilt (the log
+prints `... STALE ... -> rebuilding` or `Creating ... training`), or the run trains on stale data.
+
+### Corrected result (genuinely broad + augmented model)
+
+| gate (held-out, n=292, 47% relevant) | precision | recall | F1 |
+|---|---|---|---|
+| narrow model on broad labels (the bug) | 0.91 | 0.87 | 0.89 |
+| **broad+aug model, trained correctly** | **0.87** | **0.92** | **0.89** |
+
+Same headline F1 0.89 (all metrics > 0.8), but now the model **actually** flags performance
+psychology: anchor cases *"parents at the game… I tense up"*, *"confidence issues shooting"*,
+*"choke under pressure and panic"* all fire at P(mh) ≈ 1.00, while positive-confidence controls stay
+at ≤ 0.11 (the augmentation controls prevented over-flagging). Recall rose 0.87 → 0.92 (it now
+catches the broad positives); a small precision cost (0.91 → 0.87) is the expected price of the
+wider net. **This is the current deliverable** (`filter_relevance_mh_broad_aug_backup`).
+
 ## 6. Bottom line for the paper
 
 The entire ~0.68 → 0.92 jump came from **one change: matching the pretraining domain** (formal

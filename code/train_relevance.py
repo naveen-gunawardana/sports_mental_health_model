@@ -257,7 +257,29 @@ def prepare_splits(texts, labels, split_dir: str, group: str, description: str =
 
     missing_file = any(not os.path.exists(f) for f in file_list)
 
-    if missing_file:
+    # Guard against a STALE cache: if the ratings CSVs changed (relabeled or augmented) since the
+    # split was written, the cached split silently ignores the new data. Detect this by comparing
+    # the cached (text -> label) mapping against the current one; rebuild on any mismatch.
+    stale = False
+    if not missing_file:
+        try:
+            cached_texts = (split_dataset_from_file(file_list[0])
+                            + split_dataset_from_file(file_list[2])
+                            + split_dataset_from_file(file_list[4]))
+            cached_labels = (split_dataset_from_file(file_list[1])
+                             + split_dataset_from_file(file_list[3])
+                             + split_dataset_from_file(file_list[5]))
+            cached_map = {t: str(l) for t, l in zip(cached_texts, cached_labels)}
+            current_map = {t: str(l) for t, l in zip(texts, labels)}
+            if cached_map != current_map:
+                stale = True
+                print(f"[split] cached {description} split is STALE (data changed: "
+                      f"{len(cached_map)} cached vs {len(current_map)} current) -> rebuilding")
+        except Exception as e:
+            stale = True
+            print(f"[split] could not verify cached split ({e}) -> rebuilding")
+
+    if missing_file or stale:
         print(f"Creating {description} training, validation and test sets (80/10/10 split)")
 
         train_texts, valid_texts_init, train_labels, valid_labels_init = dataset_split(
