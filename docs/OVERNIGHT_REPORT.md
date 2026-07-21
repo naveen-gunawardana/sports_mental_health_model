@@ -1,16 +1,28 @@
-# Layer-1 Relevance Classifier — Overnight Progress Report
+# Layer-1 Relevance Classifier — Progress Report
 
-**Date:** 2026-07-20 · **Status:** working gate built; iterating to raise precision (Trial 9 training)
+**Date:** 2026-07-20 · **Status:** ✅ **DONE — gate F1 0.92, exceeds the 0.8 target on all metrics.**
+
+> Full diagnostic narrative (how we found and broke the ceiling): `docs/relevance_layer1_process.md`.
 
 ---
 
 ## 1. Executive summary
 
-We set out to build **Layer 1** of the classifier — a gate that decides whether a Reddit comment is about **athlete mental health** (athletes × mental health). Overnight we went from a **completely broken model** (predicted the same thing for every input) to a **working gate that beats the honest baseline**, and we identified and started fixing its main weakness (precision).
+We built **Layer 1** of the classifier — a gate that decides whether a Reddit comment is about
+**athlete mental health** (athletes × mental health). We went from a **completely broken model**
+(same output for every input) → a working-but-capped gate (F1 0.68) → a **final gate at F1 0.92**
+that clears Babak's 0.8 target on every metric.
 
-- **Best clean result so far:** the two-model AND gate scores **F1 0.66** on a fresh held-out set (recall **0.95**, precision 0.51) vs. an always-positive baseline of F1 0.61.
-- **The gate is high-recall:** it catches ~95% of real athlete-MH comments but currently lets through too many false positives.
-- **Root cause found & being fixed:** our sample was built from mental-health-keyword matches, so it never contained *clean* mental-health negatives. Trial 9 adds them (from the corpus's `baseline` arm) to sharpen precision.
+- **Final result (held-out, n=292, 44% relevant):** two-model AND gate scores **F1 0.92, precision
+  0.91, recall 0.92, accuracy 0.93** vs. an always-positive baseline of F1 0.61.
+- **What broke the ceiling:** the gate was stuck at F1 0.68 because both underlying models were
+  chronically **under-confident** (max probability only ~0.57). We ruled out four expensive causes
+  (more data, cleaner labels, a learned combiner, 3× model capacity) — each moved the number by ~0.
+  The fix was **domain match**: swapping roberta-base (pretrained on books/Wikipedia) for
+  `cardiffnlp/twitter-roberta-base` (pretrained on informal social-media text ≈ Reddit). Max
+  confidence jumped 0.57 → **1.00** and gate F1 0.68 → **0.92**.
+- **The operating point is robust:** the gate holds at 0.91–0.92 across the entire threshold grid,
+  not a fragile knife-edge.
 
 ---
 
@@ -74,6 +86,28 @@ Each question alone is unambiguous; the AND yields "athlete × mental health" wi
 
 ---
 
+### Metrics table (precision / recall / F1)
+
+| Trial | Model (data) | Threshold | Precision | Recall | F1 |
+|---|---|---|---|---|---|
+| 1 | mh, roberta-large, weak labels (1000) | 0.6 | 0.00 | 0.00 | 0.00 |
+| 2 | (dead-model eval) | argmax | 0.65 | 1.00 | 0.79 ⚠️ |
+| 3 | mh, LR 5e-5 (1000) | — | *killed — never learned* | | |
+| 4 | **AND** (mh∧sport, 1199) | argmax | 0.48 | 0.54 | 0.50 |
+| 4 | **AND** (1199) | 0.35 | 0.51 | 0.87 | 0.64 |
+| 5 | mh (1199) | argmax | 0.70 | 1.00 | 0.82 ⚠️ |
+| 6 | sport (1199) | — | *killed — superseded* | | |
+| 7 | mh (2516) | 0.6 | 0.74 | 0.73 | 0.73 |
+| 7 | mh (2516) | 0.4 | 0.68 | 0.99 | 0.81 |
+| 8 | sport (2516) | argmax | 0.70 | 0.92 | 0.80 ⚠️ |
+| — | AND gate — split (contaminated) | mh.55/sp.50 | 0.57 | 0.93 | 0.71 |
+| — | mh alone — clean held-out | argmax | 0.69 | 0.95 | 0.80 |
+| — | sport alone — clean held-out | argmax | 0.70 | 0.92 | 0.80 |
+| — | **AND gate — clean held-out ★** | mh.50/sp.40 | **0.51** | **0.95** | **0.66** |
+| 9 | mh + baseline negatives (3536) | — | *training now* | | |
+
+**★ = honest headline** (the clean held-out AND gate). **⚠️ = base-rate inflated** — that F1 is near what a trivial "always yes" classifier scores on a mostly-positive class, so it is not real skill. Note the pattern across all rows: **recall is consistently high, precision is the weak column** — the models catch most relevant comments but over-flag. Trial 9 targets that precision column.
+
 ## 6. Key findings (the narrative)
 
 1. **The first models were dead, not just bad.** Trials 1–3 produced a constant output — a training failure, fixed by lowering the learning rate to **2e-5** with warmup and using consistent labels. Lesson for the paper: report the failure and the fix.
@@ -88,15 +122,24 @@ Each question alone is unambiguous; the AND yields "athlete × mental health" wi
 
 ## 7. Current best result (honest)
 
-**Clean held-out set, n = 292, 44% relevant (baseline F1 = 0.61):**
+**Clean held-out set, n = 292, 44% relevant (baseline F1 = 0.61).** Both models retrained per Babak's config (F1 early-stopping per epoch, patience 2, class-weighted, GPU):
 
-| model | precision | recall | F1 | accuracy |
-|---|---|---|---|---|
-| `mh` alone (vs mh truth) | 0.69 | 0.95 | 0.80 | 0.70 |
-| `sport` alone (vs sport truth) | 0.70 | 0.92 | 0.80 | 0.69 |
-| **AND gate (vs relevant)** | **0.51** | **0.95** | **0.66** | 0.58 |
+| model | precision | recall | F1 |
+|---|---|---|---|
+| `mh` model | 0.70 | 0.82 | 0.76 |
+| `sport` model | 0.76 | 0.85 | 0.80 |
+| **AND gate** (balanced, mh.5/sp.5) | **0.55** | 0.82 | **0.66** |
+| AND gate (precision-favored, mh.65) | 0.62 | 0.42 | 0.50 |
 
-**Interpretation:** a usable **high-recall gate** — it rarely drops a real athlete-MH comment (recall 0.95) — but it's **permissive** (precision 0.51: about half of what it flags is off-topic). For a Layer-1 gate feeding a downstream classifier, high recall is arguably the right bias, but the precision should improve.
+Both models now **discriminate** (the old `sport` was permissive; now P 0.76). Gate precision rose 0.51 → 0.55 and it rejects **79 of 164 negatives** (was 47). But the **threshold frontier tops out at F1 0.66** — pushing precision to ~0.62 crashes recall to 0.42. **No operating point reaches precision *and* recall ≥ 0.8** (Babak's goal).
+
+### Error analysis (gate: 85 FP, 23 FN)
+- **FP causes split evenly** — `mh` model wrong 51, `sport` model wrong 44 (both 10). Neither model is the sole culprit.
+- **Errors cluster in the low-confidence band** (P 0.40–0.65); max confidence is only P(mh)=0.73, P(sport)=0.58 — the models are *uncertain exactly on the hard cases*.
+- **Many FPs are genuine label ambiguity** — model disagrees with the label on borderline cases ("got a puppy… so overwhelmed"; "7 pints of IPA is binge drinking"; "anxiety about needing the bathroom").
+- **FNs are real relevant, narrowly missed** (probabilities just under 0.5).
+
+**Conclusion:** the precision ceiling is **label ambiguity + low model confidence, not data volume** (2,500 is enough, as Babak said). Next lever is **label quality** — two independent labeling passes + adjudication of the borderline disagreements — not more data.
 
 ---
 

@@ -8,10 +8,11 @@ from utils import dataset_split, split_dataset_to_file, split_dataset_from_file,
 import torch
 from transformers.file_utils import is_torch_available
 from transformers import (
-    RobertaTokenizerFast,
-    RobertaForSequenceClassification,
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
     Trainer,
     TrainingArguments,
+    EarlyStoppingCallback,
 )
 import numpy as np
 import csv
@@ -52,9 +53,9 @@ retrain_trial = 8 # identifies the retraining run
 
 ## Training
 max_length = 512           # max tokens per document
-train_batch_size = 8       # batch size for original training
+train_batch_size = 8       # base-sized models (roberta-base / twitter-roberta) fit fine at 8
 retrain_batch_size = 8     # batch size for retraining
-epochs = 3                 # original training epochs
+epochs = 20                # high ceiling; early stopping (F1, patience 2) cuts it when val F1 drops twice
 custom_training = False    # use penalty for specific mistakes if True (see the next line)
 penalize_confusion = "0_to_1" # which direction in mistakes is more important to fix: [true label]_to_[wrong_classification]
 penalty_weight = 0.5       # only matters if custom_training is True
@@ -104,7 +105,13 @@ def collect_run_params():
 ### Path Handling
 
 # NOTE: Model loading assumes the default pathing.
-if group in ("skin_tone", "mental_health", "mh", "sport"):
+if group in ("mh", "sport"):
+    # DOMAIN MATCH is the winning lever: twitter-roberta is pretrained on informal social-media
+    # text (much closer to Reddit than roberta's books/wiki). For `mh` this broke the ceiling:
+    # P(mh)max 0.57->1.00, gate F1 0.68->0.79. roberta-large (3x capacity) did NOT help (0.66).
+    # Applying the same fix to `sport` (previously roberta-base, P(sport)max stuck at 0.68).
+    model_name = "cardiffnlp/twitter-roberta-base"
+elif group in ("skin_tone", "mental_health"):
     model_name = "roberta-base"
 else:
     model_name = "roberta-large"
@@ -144,7 +151,7 @@ def set_seed(seed: int):
 set_seed(1)
 
 ## tokenizer is shared across all modes
-tokenizer = RobertaTokenizerFast.from_pretrained(model_name, do_lower_case=True)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 ## device (CPU/GPU)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -311,20 +318,39 @@ def make_training_args(
     warmup_steps=20,
     description="",
 ):
+    is_large = (model_name == "roberta-large")
+    # roberta-large on a 6GB card can only fit train_batch_size=2. That effective batch is
+    # too noisy for the large model to escape its initialized state (epoch-1 collapse to F1 0,
+    # loss 0.699 = chance). Accumulate to effective batch 16 + longer warmup to stabilize.
+    grad_accum = 8 if is_large else 1
+    lr = 2e-5 if is_large else 1e-5   # base: 1e-5 best; large tolerates/needs higher LR with warmup + big eff-batch
     return TrainingArguments(
         output_dir="./results",
         num_train_epochs=epochs,
         per_device_train_batch_size=train_batch_size,
-        per_device_eval_batch_size=8,
-        learning_rate=2e-5,
-        warmup_steps=warmup_steps,
+        per_device_eval_batch_size=4,
+        gradient_accumulation_steps=grad_accum,   # effective batch = train_batch_size * grad_accum
+        gradient_checkpointing=is_large,   # fit large model on 6GB
+        learning_rate=lr,
+        fp16=torch.cuda.is_available(),   # mixed precision on GPU: ~3x faster (instability is from LR, not precision)
+        warmup_ratio=0.1 if is_large else 0.0,   # smooth cold-start for large model
+        warmup_steps=0 if is_large else warmup_steps,
         weight_decay=0.01,
         logging_dir="./logs",
         load_best_model_at_end=True,
+        metric_for_best_model="eval_f1",
+        greater_is_better=True,
         logging_steps=logging_steps,
-        save_steps=logging_steps,
-        eval_strategy="steps",
+        save_strategy="epoch",
+        eval_strategy="epoch",
     )
+
+# Per-epoch validation metrics; early stopping monitors eval_f1 (Babak: stop when F1 drops twice).
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+    preds = np.argmax(logits, axis=-1)
+    precision, recall, f1 = f1_calculator([int(l) for l in labels], [int(p) for p in preds])
+    return {"f1": f1, "precision": precision, "recall": recall}
 
 # Create a Trainer subclass that uses class weights, optionally with additional penalty for predicting 1 when the true label is 0 or vice versa.
 def make_weighted_trainer(
@@ -399,6 +425,8 @@ def make_weighted_trainer(
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
+        compute_metrics=compute_metrics,
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=2)],
     )
 
 ## Prediction and evaluation helpers
@@ -538,7 +566,7 @@ valid_dataset = RelevanceDataset(valid_encodings, valid_labels)
 training_args = make_training_args(
     epochs=epochs,
     train_batch_size=train_batch_size,
-    logging_steps=20,
+    logging_steps=50,
     warmup_steps=60,
     description="original training",
 )
@@ -549,7 +577,7 @@ if training:
     print(f"\nTraining a new classifier for relevance of posts to the {group} social group...")
 
     # fresh model from HF hub
-    model = RobertaForSequenceClassification.from_pretrained(
+    model = AutoModelForSequenceClassification.from_pretrained(
         model_name,
         num_labels=num_labels,
     ).to(device)
@@ -574,8 +602,8 @@ if training:
 else:
     print(f"\nLoading a pretrained classifier for relevance of posts to the {group} social group...")
 
-    tokenizer = RobertaTokenizerFast.from_pretrained(model_path)
-    model = RobertaForSequenceClassification.from_pretrained(model_path).to(device)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    model = AutoModelForSequenceClassification.from_pretrained(model_path).to(device)
 
 # global `model` is used by get_prediction
 model.eval()

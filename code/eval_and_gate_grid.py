@@ -9,6 +9,7 @@ import numpy as np, torch
 from transformers import RobertaTokenizerFast, RobertaForSequenceClassification
 csv.field_size_limit(2**31 - 1)
 SPLIT = "models/train_relevance_data_split"
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 def read_text(f):
@@ -24,11 +25,11 @@ def read_labels(f):
 def predict(group, texts):
     p = f"models/filter_relevance_{group}"
     tok = RobertaTokenizerFast.from_pretrained(p)
-    model = RobertaForSequenceClassification.from_pretrained(p).to("cpu").eval()
+    model = RobertaForSequenceClassification.from_pretrained(p).to(DEVICE).eval()
     out = []
     with torch.no_grad():
-        for i in range(0, len(texts), 8):
-            enc = tok(texts[i:i + 8], truncation=True, padding=True, max_length=512, return_tensors="pt")
+        for i in range(0, len(texts), 32):
+            enc = tok(texts[i:i + 32], truncation=True, padding=True, max_length=512, return_tensors="pt").to(DEVICE)
             out.extend(model(**enc).logits.softmax(1)[:, 1].tolist())
     return np.array(out)
 

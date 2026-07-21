@@ -1,0 +1,11 @@
+Looking in indexes: https://download.pytorch.org/whl/cu128
+Collecting torch==2.11.0
+  Downloading torch-2.11.0%2Bcu128-cp311-cp311-win_amd64.whl.metadata (29 kB)
+Downloading torch-2.11.0%2Bcu128-cp311-cp311-win_amd64.whl (2753.1 MB)
+   ---------------------------------------- 2.8/2.8 GB ?  0:03:42
+Installing collected packages: torch
+  Attempting uninstall: torch
+    Found existing installation: torch 2.12.1
+    Uninstalling torch-2.12.1:
+      Successfully uninstalled torch-2.12.1
+Successfully installed torch-2.11.0+cu128

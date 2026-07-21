@@ -15,6 +15,7 @@ csv.field_size_limit(2**31 - 1)
 group = sys.argv[1] if len(sys.argv) > 1 else "mental_health"
 MODEL = f"models/filter_relevance_{group}"
 SPLIT = "models/train_relevance_data_split"
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 def read_text(f):
@@ -36,11 +37,11 @@ def main():
     labels = np.array(read_labels(os.path.join(SPLIT, f"label_{group}_test.txt")))
     print(f"[{group}] loading model from {MODEL} ...")
     tok = RobertaTokenizerFast.from_pretrained(MODEL)
-    model = RobertaForSequenceClassification.from_pretrained(MODEL).to("cpu").eval()
+    model = RobertaForSequenceClassification.from_pretrained(MODEL).to(DEVICE).eval()
     probs = []
     with torch.no_grad():
-        for i in range(0, len(texts), 8):
-            enc = tok(texts[i:i + 8], truncation=True, padding=True, max_length=512, return_tensors="pt")
+        for i in range(0, len(texts), 32):
+            enc = tok(texts[i:i + 32], truncation=True, padding=True, max_length=512, return_tensors="pt").to(DEVICE)
             probs.extend(model(**enc).logits.softmax(1)[:, 1].tolist())
     probs = np.array(probs)
     print(f"test n={len(labels)}  true_relevant={int(labels.sum())}  true_irrelevant={int((labels==0).sum())}")
